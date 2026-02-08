@@ -33,17 +33,32 @@ class RegisteredUserController extends Controller
             'name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:'.User::class],
             'password' => ['required', 'confirmed', Rules\Password::defaults()],
+            'role' => ['required', 'in:acheteur,agriculteur,cooperative'],
         ]);
+
+        $role = $request->role;
+
+        // Coopérative = validation nécessaire
+        $status = $role === User::ROLE_COOPERATIVE
+        ? User::STATUS_PENDING
+        : User::STATUS_APPROVED;
 
         $user = User::create([
             'name' => $request->name,
             'email' => $request->email,
             'password' => Hash::make($request->password),
+            'role' => $role,
+            'status' => $status,
         ]);
 
         event(new Registered($user));
 
         Auth::login($user);
+        
+        // Redirection spéciale si coopérative en attente
+        if ($user->role === User::ROLE_COOPERATIVE && $user->status === User::STATUS_PENDING) {
+            return redirect()->route('cooperative.pending');
+        }
 
         return redirect(route('dashboard', absolute: false));
     }

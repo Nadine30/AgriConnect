@@ -16,6 +16,24 @@
             <x-input-error :messages="$errors->get('email')" class="mt-2" />
         </div>
 
+        <!-- Role -->
+        <div class="mt-4">
+            <x-input-label for="role" :value="__('Type de compte')" />
+            <select id="role" name="role"
+                    class="block mt-1 w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
+                <option value="acheteur" {{ old('role', 'acheteur') === 'acheteur' ? 'selected' : '' }}>
+                    Acheteur (revendeur, restaurant, hôtel…)
+                </option>
+                <option value="agriculteur" {{ old('role') === 'agriculteur' ? 'selected' : '' }}>
+                    Agriculteur
+                </option>
+                <option value="cooperative" {{ old('role') === 'cooperative' ? 'selected' : '' }}>
+                    Coopérative (validation requise)
+                </option>
+            </select>
+            <x-input-error :messages="$errors->get('role')" class="mt-2" />
+        </div>
+
         <!-- Password -->
         <div class="mt-4">
             <x-input-label for="password" :value="__('Password')" />
